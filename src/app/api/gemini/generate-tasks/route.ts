@@ -146,18 +146,20 @@ export async function POST(request: NextRequest) {
       
       // Return the tasks
       return NextResponse.json({ tasks }, { status: 200 });
-    } catch (aiError: Error) {
+    } catch (aiError: unknown) {
       console.error('Gemini API error:', aiError);
       
       // Handle specific error types
-      if (aiError.message?.includes('403')) {
+      const errorMessage = aiError instanceof Error ? aiError.message : String(aiError);
+      
+      if (errorMessage.includes('403')) {
         return NextResponse.json(
           { error: 'API key authentication failed. Make sure your Gemini API key is valid.' }, 
           { status: 403 }
         );
       }
       
-      if (aiError.message?.includes('429')) {
+      if (errorMessage.includes('429')) {
         return NextResponse.json(
           { error: 'Rate limit exceeded. Please try again later.' }, 
           { status: 429 }

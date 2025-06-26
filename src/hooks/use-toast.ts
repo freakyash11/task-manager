@@ -1,4 +1,16 @@
-import { toast as sonnerToast, type ToastOptions } from 'sonner';
+import { toast as sonnerToast } from 'sonner';
+import React from 'react';
+
+type ToastOptions = {
+  duration?: number;
+  style?: React.CSSProperties;
+  className?: string;
+  action?: {
+    label: string;
+    onClick: () => void;
+  };
+  description?: string;
+};
 
 type ToastProps = {
   title?: string;
