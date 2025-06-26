@@ -7,16 +7,17 @@ import { eq, and } from 'drizzle-orm';
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const user = await requireAuth(request);
     
     // First get the current task
     const currentTask = await db
       .select()
       .from(tasks)
-      .where(and(eq(tasks.id, params.id), eq(tasks.userId, user.id)))
+      .where(and(eq(tasks.id, id), eq(tasks.userId, user.id)))
       .limit(1);
 
     if (currentTask.length === 0) {
@@ -30,7 +31,7 @@ export async function PATCH(
         completed: !currentTask[0].completed, 
         updatedAt: new Date() 
       })
-      .where(and(eq(tasks.id, params.id), eq(tasks.userId, user.id)))
+      .where(and(eq(tasks.id, id), eq(tasks.userId, user.id)))
       .returning();
 
     return NextResponse.json(updatedTask[0]);

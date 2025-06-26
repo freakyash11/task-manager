@@ -16,9 +16,10 @@ const updateTaskSchema = z.object({
 // PUT /api/tasks/[id]
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const user = await requireAuth(request);
     const body = await request.json();
     const updateData = updateTaskSchema.parse(body);
@@ -26,7 +27,7 @@ export async function PUT(
     const updatedTask = await db
       .update(tasks)
       .set({ ...updateData, updatedAt: new Date() })
-      .where(and(eq(tasks.id, params.id), eq(tasks.userId, user.id)))
+      .where(and(eq(tasks.id, id), eq(tasks.userId, user.id)))
       .returning();
 
     if (updatedTask.length === 0) {
@@ -42,14 +43,15 @@ export async function PUT(
 // DELETE /api/tasks/[id]
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const user = await requireAuth(request);
     
     const deletedTask = await db
       .delete(tasks)
-      .where(and(eq(tasks.id, params.id), eq(tasks.userId, user.id)))
+      .where(and(eq(tasks.id, id), eq(tasks.userId, user.id)))
       .returning();
 
     if (deletedTask.length === 0) {
