@@ -1,7 +1,6 @@
-import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { CheckCircle, ListTodo, Zap, Brain } from "lucide-react";
+import { CheckCircle, ListTodo, Brain } from "lucide-react";
 import { DashboardButton } from "@/components/DashboardButton";
 import { FooterDashboardLink } from "@/components/FooterDashboardLink";
 

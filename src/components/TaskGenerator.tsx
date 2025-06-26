@@ -11,6 +11,10 @@ import { useCreateTask } from '@/hooks/useTasks';
 import { Loader2, AlertCircle } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
+interface TaskError extends Error {
+  message: string;
+}
+
 export default function TaskGenerator() {
   const [topic, setTopic] = useState('');
   const [selectedTasks, setSelectedTasks] = useState<Set<number>>(new Set());
@@ -34,13 +38,15 @@ export default function TaskGenerator() {
       } else {
         setError('No tasks were generated. Please try a different topic.');
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Task generation error:', error);
       
+      const taskError = error as TaskError;
+      
       // Handle specific error cases
-      if (error.message?.includes('API Key')) {
+      if (taskError.message?.includes('API Key')) {
         setError('AI service is not properly configured. Please contact the administrator.');
-      } else if (error.message?.includes('Unauthorized')) {
+      } else if (taskError.message?.includes('Unauthorized')) {
         setError('You need to be signed in to generate tasks.');
       } else {
         setError('Failed to generate tasks. Please try again later.');
@@ -48,7 +54,7 @@ export default function TaskGenerator() {
       
       toast({
         title: 'Error',
-        description: error.message || 'Failed to generate tasks',
+        description: taskError.message || 'Failed to generate tasks',
         variant: 'destructive',
       });
     }
@@ -71,9 +77,10 @@ export default function TaskGenerator() {
       for (const task of tasksToSave) {
         try {
           await createTaskMutation.mutateAsync(task);
-        } catch (taskError: any) {
-          console.error('Error saving task:', task, taskError);
-          throw new Error(`Failed to save task: ${task.title.substring(0, 20)}... - ${taskError.message}`);
+        } catch (taskError: unknown) {
+          const typedError = taskError as TaskError;
+          console.error('Error saving task:', task, typedError);
+          throw new Error(`Failed to save task: ${task.title.substring(0, 20)}... - ${typedError.message}`);
         }
       }
       
@@ -86,14 +93,16 @@ export default function TaskGenerator() {
       setSelectedTasks(new Set());
       setTopic('');
       setError(null);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Save tasks error:', error);
       
       setError('Some tasks could not be saved. Please try again.');
       
+      const typedError = error as TaskError;
+      
       toast({
         title: 'Error',
-        description: error.message || 'Failed to save tasks. Please try again.',
+        description: typedError.message || 'Failed to save tasks. Please try again.',
         variant: 'destructive',
       });
     } finally {

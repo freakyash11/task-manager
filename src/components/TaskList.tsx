@@ -11,8 +11,10 @@ import { useTasks, useToggleTask, useDeleteTask } from '@/hooks/useTasks';
 import { Edit, Trash2, Filter } from 'lucide-react';
 import { Task } from '@/types';
 
+type FilterValue = 'all' | 'completed' | 'pending';
+
 export default function TaskList() {
-  const [filter, setFilter] = useState<'all' | 'completed' | 'pending'>('all');
+  const [filter, setFilter] = useState<FilterValue>('all');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
 
   const filters = filter === 'all' ? undefined : { completed: filter === 'completed' };
@@ -37,7 +39,7 @@ export default function TaskList() {
         <CardTitle className="flex items-center justify-between">
           My Tasks
           <div className="flex gap-2">
-            <Select value={filter} onValueChange={(value: any) => setFilter(value)}>
+            <Select value={filter} onValueChange={(value: FilterValue) => setFilter(value)}>
               <SelectTrigger className="w-32">
                 <SelectValue />
               </SelectTrigger>

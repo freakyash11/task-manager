@@ -10,7 +10,7 @@ async function handleApiResponse(response: Response) {
     try {
       const errorData = await response.json();
       throw new Error(errorData.error || `API error: ${response.status}`);
-    } catch (jsonError) {
+    } catch (_) {
       // If can't parse JSON, throw generic error with status
       throw new Error(`API error: ${response.status} ${response.statusText}`);
     }

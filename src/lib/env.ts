@@ -1,14 +1,6 @@
 // src/lib/env.ts
 import { z } from 'zod';
 
-// Process environment variables with validation
-const envSchema = z.object({
-  DATABASE_URL: z.string().optional().default(''),
-  GEMINI_API_KEY: z.string().optional().default(''),
-  CLERK_SECRET_KEY: z.string().optional().default(''),
-  NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string().optional().default(''),
-});
-
 // Helper function to safely access environment variables
 function getEnvVariable(key: string): string {
   try {

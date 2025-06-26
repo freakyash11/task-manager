@@ -1,6 +1,6 @@
 // src/app/api/gemini/generate-tasks/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from '@google/generative-ai';
+import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold, GenerativeModel } from '@google/generative-ai';
 import { getAuth } from '@clerk/nextjs/server';
 import { db } from '@/lib/db';
 import { users } from '@/lib/db/schema';
@@ -18,7 +18,7 @@ const apiKey = env.GEMINI_API_KEY;
 
 // Initialize Gemini AI with proper error handling
 let genAI: GoogleGenerativeAI | null = null;
-let model: any = null;
+let model: GenerativeModel | null = null;
 
 if (apiKey) {
   try {
@@ -146,7 +146,7 @@ export async function POST(request: NextRequest) {
       
       // Return the tasks
       return NextResponse.json({ tasks }, { status: 200 });
-    } catch (aiError: any) {
+    } catch (aiError: Error) {
       console.error('Gemini API error:', aiError);
       
       // Handle specific error types
@@ -169,14 +169,16 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       );
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error generating tasks:', error);
     
-    if (error.name === 'ZodError') {
+    const typedError = error as Error;
+    
+    if (typedError instanceof z.ZodError) {
       return NextResponse.json({ error: 'Invalid input data' }, { status: 400 });
     }
     
-    if (error.message === 'Unauthorized') {
+    if (typedError.message === 'Unauthorized') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     

@@ -34,7 +34,7 @@ export async function PATCH(
       .returning();
 
     return NextResponse.json(updatedTask[0]);
-  } catch (error) {
+  } catch (_) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 }

@@ -34,7 +34,7 @@ export async function PUT(
     }
 
     return NextResponse.json(updatedTask[0]);
-  } catch (error) {
+  } catch (_) {
     return NextResponse.json({ error: 'Invalid data' }, { status: 400 });
   }
 }
@@ -57,7 +57,7 @@ export async function DELETE(
     }
 
     return NextResponse.json({ message: 'Task deleted successfully' });
-  } catch (error) {
+  } catch (_) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 }
