@@ -19,7 +19,7 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
-    const user = await requireAuth();
+    const user = await requireAuth(request);
     const body = await request.json();
     const updateData = updateTaskSchema.parse(body);
 
@@ -45,7 +45,7 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    const user = await requireAuth();
+    const user = await requireAuth(request);
     
     const deletedTask = await db
       .delete(tasks)
